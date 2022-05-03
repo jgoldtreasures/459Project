@@ -38,6 +38,7 @@ def create_empty_node_dict(network):
 def centrality_iteration(network, n, centrality_method, iterations):
     dictionary = create_empty_node_dict(network)
     for i in range(iterations):
+        print(i)
         # centrality = centrality_tests(remove_n_nodes(network, n))
         if centrality_method == 'degree':
             centrality = nx.degree_centrality(remove_n_nodes(network, n))
@@ -50,7 +51,7 @@ def centrality_iteration(network, n, centrality_method, iterations):
             centrality = nx.pagerank(remove_n_nodes(network, n))
         for node in centrality:
             dictionary[node].append(centrality[node])
-
+    print('done')
     return dictionary
 
 
@@ -113,8 +114,6 @@ def convert_dicts_to_2arr(wt, dis):
     return x, y
 
 
-
-
 full_edgelist = pd.read_csv('full_network.txt', sep='\t', lineterminator='\n')
 cancer = pd.read_csv('cancer_genes.txt', sep='\t', lineterminator='\n')
 full_edgelist = full_edgelist[['BioGRID ID Interactor A', 'BioGRID ID Interactor B']]
@@ -145,40 +144,39 @@ print(cancer_network.nodes)
 
 # print(centrality_tests(full_network))
 #
-fn_centrality = [nx.degree_centrality(full_network), nx.closeness_centrality(full_network),
-                 nx.betweenness_centrality(full_network), nx.pagerank(full_network)]
-# cn_centrality = [nx.degree_centrality(cancer_network), nx.closeness_centrality(cancer_network), nx.betweenness_centrality(cancer_network), nx.pagerank(cancer_network)]
-
-# print(fn_centrality)
-# print(cn_centrality)
-
-fn_centrality_df = pd.DataFrame(fn_centrality).transpose().rename(columns={0: 'Degree', 1: 'Closeness', 2: 'Betweenness', 3: 'PageRank'}).sort_index()
-pretty_print(fn_centrality_df)
+# fn_centrality = [nx.degree_centrality(full_network), nx.closeness_centrality(full_network),
+#                  nx.betweenness_centrality(full_network), nx.pagerank(full_network)]
+# # cn_centrality = [nx.degree_centrality(cancer_network), nx.closeness_centrality(cancer_network), nx.betweenness_centrality(cancer_network), nx.pagerank(cancer_network)]
+#
+# # print(fn_centrality)
+# # print(cn_centrality)
+#
+# fn_centrality_df = pd.DataFrame(fn_centrality).transpose().rename(columns={0: 'Degree', 1: 'Closeness', 2: 'Betweenness', 3: 'PageRank'}).sort_index()
+# pretty_print(fn_centrality_df)
 
 # cn_centrality_df = pd.DataFrame(cn_centrality).transpose().rename(columns={0: 'Degree', 1: 'Closeness', 2: 'Betweenness', 3: 'PageRank'})
 # print(cn_centrality_df)
 #
 # print(centrality_iteration(full_network, 17, 'degree'))
-dictionary = centrality_iteration(full_network, 17, 'degree', 1000)
+dictionary = centrality_iteration(full_network, 17, 'betweenness', 100)
 print(dictionary)
 # print(avg_std(dictionary)[1])
 #
-std_avg = avg_std(dictionary)
+# std_avg = avg_std(dictionary)
 # # print(min(list(std_avg.values())))
 #
-print(t_test(nx.degree_centrality(full_network), std_avg[0], std_avg[1], 1000))
+# print(t_test(nx.degree_centrality(full_network), std_avg[0], std_avg[1], 1000))
 # print(nx.group_betweenness_centrality(full_network, cancer_genes_in_network))
 
 # cancerous_centrality = fn_centrality_df.iloc[[116252]]
 # print(cancerous_centrality)
-wt_central = nx.degree_centrality(full_network)
+wt_central = nx.betweenness_centrality(full_network)
 
 # print(avg_difference(wt_central, dictionary))
 avg_diff_wt_dis = avg_difference(wt_central, dictionary)
-
 print(avg_diff_wt_dis)
 
-cn_central = nx.degree_centrality(cancer_network)
+cn_central = nx.betweenness_centrality(cancer_network)
 print(cn_central)
 cn_central_list = list(cn_central.values())
 print(wt_central)
